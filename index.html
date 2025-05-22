@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume & JD Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-gauge@4.0.0"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            background: radial-gradient(ellipse at 60% 40%, #e0f7fa 60%, #e1bee7 100%);
+            color: #222;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 3rem 1rem 1rem 1rem;
+            gap: 2.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .left-panel {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(44, 62, 80, 0.09);
+            padding: 2.5rem 2rem 2rem 2rem;
+            min-width: 340px;
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px dashed #1de9b6;
+            transition: border-color 0.2s;
+        }
+        .file-label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1de9b6;
+        }
+        .left-panel label {
+            display: block;
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 1.2rem;
+            cursor: pointer;
+        }
+        .left-panel input[type='file'] {
+            display: none;
+        }
+        .file-link {
+            color: #1976d2;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.98rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .upload-btn {
+            background: linear-gradient(90deg, #1de9b6 60%, #64b5f6 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.9rem 2.2rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1.2rem;
+            margin-bottom: 0.5rem;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+        }
+        .upload-btn:hover {
+            background: linear-gradient(90deg, #00bfae 60%, #1976d2 100%);
+            box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
+        }
+        .privacy {
+            font-size: 0.95rem;
+            color: #888;
+            margin-top: 1rem;
+        }
+        .right-panel {
+            flex: 1;
+            min-width: 320px;
+            max-width: 500px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(44, 62, 80, 0.09);
+            padding: 2.5rem 2rem 2rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 0;
+            transition: background 0.2s;
+        }
+        .gauge-container {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 1.5rem auto;
+        }
+        .companies-title {
+            font-size: 1.1rem;
+            color: #1976d2;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+        }
+        .company-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .company-card {
+            background: linear-gradient(90deg, #e0f7fa 60%, #e1bee7 100%);
+            color: #333;
+            border-radius: 7px;
+            padding: 1rem 1.2rem;
+            font-weight: 600;
+            font-size: 1.07rem;
+            box-shadow: 0 1px 4px rgba(44, 62, 80, 0.07);
+            transition: background 0.2s, color 0.2s;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .company-card:hover {
+            background: linear-gradient(90deg, #b2fef7 60%, #ce93d8 100%);
+            color: #1976d2;
+        }
+        .company-role {
+            font-size: 1rem;
+            color: #1976d2;
+            font-weight: 500;
+        }
+        .company-percentage {
+            font-size: 1rem;
+            color: #388e3c;
+            font-weight: 500;
+        }
+        .project-description {
+            background: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            margin: 2rem auto 1rem auto;
+            max-width: 700px;
+            padding: 1.5rem 2rem;
+            font-size: 1.1rem;
+            color: #333;
+            box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+            text-align: center;
+        }
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1.5rem;
+            }
+            .right-panel, .left-panel {
+                max-width: 100%;
+                min-width: 0;
+            }
+        }
+        @media (max-width: 600px) {
+            .left-panel, .right-panel {
+                padding: 1.2rem 0.5rem 1rem 0.5rem;
+            }
+            .project-description {
+                padding: 1rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <!-- Left: Input Section -->
+        <form id="uploadForm" class="left-panel" autocomplete="off">
+            <h2 style="font-size:1.5rem; font-weight:700; margin-bottom:1.2rem; text-align:center;">ResumeSure and Job Recommendations</h2>
+            <div class="file-label">Upload Resume (PDF)</div>
+            <label for="resumeInput" id="resumeLabel" class="file-link">Choose your resume</label>
+            <input type="file" id="resumeInput" name="resume" accept=".pdf" required>
+            <div class="file-label" style="margin-top:1.2rem;">Upload Job Description (PDF)</div>
+            <label for="jdInput" id="jdLabel" class="file-link">Choose job description</label>
+            <input type="file" id="jdInput" name="job_description" accept=".pdf" required>
+            <button type="submit" class="upload-btn">Upload & Analyze</button>
+            <div class="privacy">
+                <i class="fa fa-lock"></i> Privacy guaranteed
+            </div>
+            <div id="fileLinks" style="margin-top:1rem;"></div>
+        </form>
+        <!-- Right: Results Section -->
+        <div class="right-panel" id="resultsPanel" style="display:none;">
+            <div class="gauge-container">
+                <canvas id="atsGauge"></canvas>
+                <div id="atsScoreText" class="mt-2 fs-4"></div>
+            </div>
+            <div class="companies-title">Recommended Companies</div>
+            <div class="company-list" id="companiesList">
+                <!-- Company cards will appear here -->
+            </div>
+        </div>
+    </div>
+    <div class="project-description">
+        <strong>About this Project:</strong><br>
+        This Resume & Job Description Checker uses AI to analyze your resume against a job description. It calculates your ATS score and recommends companies that best match your profile. Upload your resume and a job description PDF to get instant feedback and recommendations!
+    </div>
+    <script>
+        // File input and label logic
+        const resumeInput = document.getElementById('resumeInput');
+        const jdInput = document.getElementById('jdInput');
+        const resumeLabel = document.getElementById('resumeLabel');
+        const jdLabel = document.getElementById('jdLabel');
+        const fileLinks = document.getElementById('fileLinks');
+        let resumeFileURL = null, jdFileURL = null;
+
+        resumeInput.addEventListener('change', () => {
+            if (resumeFileURL) URL.revokeObjectURL(resumeFileURL);
+            if (resumeInput.files.length) {
+                resumeFileURL = URL.createObjectURL(resumeInput.files[0]);
+                resumeLabel.textContent = resumeInput.files[0].name;
+                updateFileLinks();
+            } else {
+                resumeLabel.textContent = 'Choose your resume';
+                updateFileLinks();
+            }
+        });
+        jdInput.addEventListener('change', () => {
+            if (jdFileURL) URL.revokeObjectURL(jdFileURL);
+            if (jdInput.files.length) {
+                jdFileURL = URL.createObjectURL(jdInput.files[0]);
+                jdLabel.textContent = jdInput.files[0].name;
+                updateFileLinks();
+            } else {
+                jdLabel.textContent = 'Choose job description';
+                updateFileLinks();
+            }
+        });
+        function updateFileLinks() {
+            fileLinks.innerHTML = '';
+            if (resumeFileURL) {
+                fileLinks.innerHTML += `<a href="${resumeFileURL}" target="_blank" class="file-link">Open Resume</a>`;
+            }
+            if (jdFileURL) {
+                fileLinks.innerHTML += `<a href="${jdFileURL}" target="_blank" class="file-link">Open Job Description</a>`;
+            }
+        }
+
+        // Gauge chart setup
+        let gaugeChart = null;
+        function showGauge(score) {
+            const ctx = document.getElementById('atsGauge').getContext('2d');
+            if (gaugeChart) gaugeChart.destroy();
+            gaugeChart = new Chart(ctx, {
+                type: 'gauge',
+                data: {
+                    datasets: [{
+                        value: score,
+                        data: [100],
+                        backgroundColor: ['#1de9b6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '80%',
+                    circumference: 180,
+                    rotation: 270,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    needle: {
+                        radiusPercentage: 2,
+                        widthPercentage: 3.2,
+                        lengthPercentage: 80,
+                        color: 'rgba(0, 0, 0, 1)'
+                    },
+                    valueLabel: { display: false }
+                }
+            });
+            document.getElementById('atsScoreText').innerText = `ATS Score: ${score}%`;
+        }
+
+        // Handle form submit
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!resumeInput.files.length || !jdInput.files.length) {
+                alert('Please select both files!');
+                return;
+            }
+            document.getElementById('resultsPanel').style.display = 'flex';
+            showGauge(0);
+            document.getElementById('companiesList').innerHTML = '<div>Loading...</div>';
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('resume', resumeInput.files[0]);
+            formData.append('job_description', jdInput.files[0]);
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    showGauge(0);
+                    document.getElementById('companiesList').innerHTML = `<div style="color:red;">${data.error}</div>`;
+                    return;
+                }
+
+                // Animate gauge
+                let score = Math.round(data.ats_score || 0);
+                let current = 0;
+                let interval = setInterval(() => {
+                    if (current < score) {
+                        current++;
+                        showGauge(current);
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 10);
+
+                // Show recommended companies as cards
+                const companiesList = document.getElementById('companiesList');
+                companiesList.innerHTML = '';
+                if (data.recommended_companies && data.recommended_companies.length > 0) {
+                    data.recommended_companies.forEach(c => {
+                        let div = document.createElement('div');
+                        div.className = 'company-card';
+                        div.innerHTML = `
+                            <div><strong>${c.company}</strong></div>
+                            <div class="company-role">Role: ${c.role}</div>
+                            <div class="company-percentage">Match: ${c.percentage}%</div>
+                        `;
+                        companiesList.appendChild(div);
+                    });
+                } else {
+                    companiesList.innerHTML = '<div>No recommendations found.</div>';
+                }
+            } catch (err) {
+                showGauge(0);
+                document.getElementById('companiesList').innerHTML = `<div style="color:red;">Server error. Please try again.</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
